@@ -1,0 +1,40 @@
+- name: Play 1 - Instalar depedencias
+  hosts: workers
+  become: true # Es para ejecutar con sudo
+  vars:
+    app_state: present
+    KUBERNETES_VERSION: 1.37
+    CRIO_VERSION: 1.37
+    CRIO_O_PKG: cri-o={{ CRIO_VERSION }}
+    KUBELET_PKG: kubelet={{ KUBERNETES_VERSION }}
+    KUBEADM_PKG: kubeadm={{ KUBERNETES_VERSION }}
+    KUBECTL_PKG: kubectl={{ KUBERNETES_VERSION }}
+  
+  tasks:
+  - name: Actualizamos índices de paquetes
+    apt:
+      update_cache: yes
+      cache_valid_time: 3600
+
+  - name: Instalar paquetes necesarios
+    apt:
+      name: "{{ paquete.nombre }}"
+      state: present
+    loop:
+      - nombre: curl
+      - nombre: {{ CRIO_O_PKG }}
+      - nombre: {{ KUBELET_PKG }}
+      - nombre: {{ KUBEADM_PKG }}
+      - nombre: {{ KUBECTL_PKG }}
+    loop_control:
+      loop_var: paquete         
+      label: "{{ paquete.nombre }}"
+
+  - name: ACTIVAR REENVIO DE IPv4
+    cmd: echo 'net.ipv4.ip_forward = 1' | tee /etc/sysctl.d/99-kubernetes-ipforward.conf
+
+  - name: Arrancar servicio CRIO
+    service:
+      name: crio
+      state: started  # Opciones: started, stopped, restarted
+      enabled: yes    # ¿Arrancar al inicio del sistema?
