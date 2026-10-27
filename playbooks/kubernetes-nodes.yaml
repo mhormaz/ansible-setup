@@ -2,44 +2,27 @@
   hosts: workers
   become: true # Es para ejecutar con sudo
   vars:
-    app_state: present
-    KUBERNETES_VERSION: 1.37.* # El asterisco permite no definir la versión menor, para mantener las versiones 1.37
-    CRIO_VERSION: 1.37.*
-    CRIO_O_PKG: "cri-o=1.37.1"
-    KUBEADM_PKG: "kubeadm=1.37.1-1.1"
-    KUBELET_PKG: "kubelet=1.37.1-1.1"
-    KUBECTL_PKG: "kubectl=1.37.1-1.1"
+    KUBERNETES_VERSION: "v1.36"
+    CRIO_VERSION: "v1.36"
+    CRIO_O_PKG: "cri-o"
+    KUBEADM_PKG: "kubeadm"
+    KUBELET_PKG: "kubelet"
+    KUBECTL_PKG: "kubectl"
   
   tasks:
-  - name: Actualizamos índices de paquetes
-    apt:
-      update_cache: yes
-      cache_valid_time: 3600
-
-  - name: Instalar paquetes necesarios
-    apt:
-      name: "{{ paquete.nombre }}"
-      state: present
-    loop:
-      - nombre: curl
-      - nombre: "{{ CRIO_O_PKG }}"
-      - nombre: "{{ KUBEADM_PKG }}"
-      - nombre: "{{ KUBELET_PKG }}"
-      - nombre: "{{ KUBECTL_PKG }}"
-    loop_control:
-      loop_var: paquete         
-      label: "{{ paquete.nombre }}"
+  - name: Instalar dependencias
+    ansible.builtin.include_tasks: kubernetes-dependencias.yaml
 
   - name: Activar reenvio de IPv4 (parámetros para kubernetes)
-    shell:
+    ansible.builtin.shell:
       cmd: echo 'net.ipv4.ip_forward = 1' | tee /etc/sysctl.d/99-kubernetes-ipforward.conf
 
   - name: Aplicamos los parámetros para sysctl
-    shell:
+    ansible.builtin.shell:
       cmd: sysctl --system
 
   - name: Arrancar servicio CRIO
-    service:
+    ansible.builtin.service:
       name: crio
       state: started  # Opciones: started, stopped, restarted
       enabled: yes    # ¿Arrancar al inicio del sistema?
