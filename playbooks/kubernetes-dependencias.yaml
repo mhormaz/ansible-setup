@@ -1,6 +1,5 @@
+---
 - name: Instalar dependencias
-  hosts: workers
-  become: true # Es para ejecutar con sudo
   vars:
     KUBERNETES_VERSION: "v1.36"
     CRIO_VERSION: "v1.36"
@@ -8,72 +7,71 @@
     KUBEADM_PKG: "kubeadm"
     KUBELET_PKG: "kubelet"
     KUBECTL_PKG: "kubectl"
-  
-  tasks:
-  - name: Actualización de índices de paquetes
-    apt:
-      update_cache: yes
-      cache_valid_time: 3600
 
-  - name: Instalación de dependencias de APT
-    ansible.builtin.apt:
-      name:
-        - ca-certificates
-        - curl
-        - gpg
-      state: present
+- name: Actualización de índices de paquetes
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
 
-  # Claves de los repos de kubernetes y CRI-O #
-  - name: Descarga de la clave de Kubernetes
-    ansible.builtin.get_url:
-     url: "https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/Release.key"
-     dest: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-     owner: root
-     group: root
-     mode: "0644"
+- name: Instalación de dependencias de APT
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - gpg
+    state: present
 
-  - name: Descarga de la clave de CRI-O
-    ansible.builtin.get_url:
-      url: "https://pkgs.k8s.io/addons:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/Release.key"
-      dest: /etc/apt/keyrings/cri-o-apt-keyring.gpg
-      owner: root
-      group: root
-      mode: "0644"
+# Claves de los repos de kubernetes y CRI-O #
+- name: Descarga de la clave de Kubernetes
+  ansible.builtin.get_url:
+   url: "https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/Release.key"
+   dest: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+   owner: root
+   group: root
+   mode: "0644"
 
-  # Instalación de repositorios #
-  - name: Añadir repositorio de Kubernetes
-    ansible.builtin.apt_repository:
-      repo: >-
-        deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg]
-        https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/ /
-      filename: kubernetes
-      state: present
-      update_cache: false
+- name: Descarga de la clave de CRI-O
+  ansible.builtin.get_url:
+    url: "https://pkgs.k8s.io/addons:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/Release.key"
+    dest: /etc/apt/keyrings/cri-o-apt-keyring.gpg
+    owner: root
+    group: root
+    mode: "0644"
 
-  - name: Añadir repositorio de CRI-O
-    ansible.builtin.apt_repository:
-      repo: >-
-        deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg]
-        https://pkgs.k8s.io/addons:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/ /
-      filename: cri-o
-      state: present
-      update_cache: false
+# Instalación de repositorios #
+- name: Añadir repositorio de Kubernetes
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg]
+      https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/ /
+    filename: kubernetes
+    state: present
+    update_cache: false
 
-  # Actualizamos los índices antes de instalar #
-  - name: Actualización de índices de paquetes
-    ansible.builtin.apt:
-      update_cache: true
-      cache_valid_time: 3600
+- name: Añadir repositorio de CRI-O
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg]
+      https://pkgs.k8s.io/addons:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/ /
+    filename: cri-o
+    state: present
+    update_cache: false
 
-  - name: Instalar paquetes necesarios
-    ansible.builtin.apt:
-      name: "{{ paquete.nombre }}"
-      state: present
-    loop:
-      - nombre: "{{ CRIO_O_PKG }}"
-      - nombre: "{{ KUBEADM_PKG }}"
-      - nombre: "{{ KUBELET_PKG }}"
-      - nombre: "{{ KUBECTL_PKG }}"
-    loop_control:
-      loop_var: paquete         
-      label: "{{ paquete.nombre }}"
+# Actualizamos los índices antes de instalar #
+- name: Actualización de índices de paquetes
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Instalar paquetes necesarios
+  ansible.builtin.apt:
+    name: "{{ paquete.nombre }}"
+    state: present
+  loop:
+    - nombre: "{{ CRIO_O_PKG }}"
+    - nombre: "{{ KUBEADM_PKG }}"
+    - nombre: "{{ KUBELET_PKG }}"
+    - nombre: "{{ KUBECTL_PKG }}"
+  loop_control:
+    loop_var: paquete         
+    label: "{{ paquete.nombre }}"
