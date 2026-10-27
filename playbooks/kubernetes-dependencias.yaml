@@ -1,13 +1,4 @@
 ---
-- name: Instalar dependencias
-  vars:
-    KUBERNETES_VERSION: "v1.36"
-    CRIO_VERSION: "v1.36"
-    CRIO_O_PKG: "cri-o"
-    KUBEADM_PKG: "kubeadm"
-    KUBELET_PKG: "kubelet"
-    KUBECTL_PKG: "kubectl"
-
 - name: Actualización de índices de paquetes
   apt:
     update_cache: yes

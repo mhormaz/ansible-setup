@@ -11,7 +11,7 @@
   
   tasks:
   - name: Instalar dependencias
-    ansible.builtin.import_tasks: kubernetes-dependencias.yaml
+    ansible.builtin.import_tasks: ./kubernetes-dependencias.yaml
 
   - name: Activar reenvio de IPv4 (parámetros para kubernetes)
     ansible.builtin.shell:
