@@ -1,6 +1,6 @@
 ---
 - name: Actualización de índices de paquetes
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
 
@@ -23,7 +23,7 @@
 
 - name: Descarga de la clave de CRI-O
   ansible.builtin.get_url:
-    url: "https://pkgs.k8s.io/addons:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/Release.key"
+    url: "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/Release.key"
     dest: /etc/apt/keyrings/cri-o-apt-keyring.gpg
     owner: root
     group: root
@@ -43,7 +43,7 @@
   ansible.builtin.apt_repository:
     repo: >-
       deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg]
-      https://pkgs.k8s.io/addons:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/ /
+      https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/ /
     filename: cri-o
     state: present
     update_cache: false
