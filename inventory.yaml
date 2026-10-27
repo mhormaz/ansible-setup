@@ -1,0 +1,14 @@
+all:
+  children:
+    workers:
+      hosts:
+        worker1:
+          ansible_host: 192.168.1.54
+          ansible_port: 20
+          ansible_user: worker1
+          ansible_ssh_pass: worker
+        worker2:
+          ansible_host: 192.168.1.53
+          ansible_port: 20
+          ansible_user: worker2
+          ansible_ssh_pass: worker
