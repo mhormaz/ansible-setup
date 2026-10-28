@@ -16,7 +16,7 @@
 - name: Añadir repositorio de Kubernetes
   ansible.builtin.deb822_repository:
     name: kubernetes
-    type:
+    types:
       - deb
     uris:
       - "https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/ /"
