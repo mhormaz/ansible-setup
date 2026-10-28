@@ -12,6 +12,13 @@
       - gpg
     state: present
 
+- name: Creación de directorio para las claves de los repos
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755" 
+
+
 # Instalación de repositorios #
 - name: Añadir repositorio de Kubernetes
   ansible.builtin.deb822_repository:
@@ -19,7 +26,7 @@
     types:
       - deb
     uris:
-      - "https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/ /"
+      - "https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/"
     suites:
       - "/"
     signed_by: "https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/Release.key"
@@ -31,7 +38,7 @@
     types:
       - deb
     uris:
-      - "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/ /"
+      - "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/"
     suites: 
       - "/"
     signed_by: "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/Release.key"
@@ -48,6 +55,7 @@
     name: "{{ paquete.nombre }}"
     state: present
   loop:
+    - nombre: curl
     - nombre: "{{ CRIO_O_PKG }}"
     - nombre: "{{ KUBEADM_PKG }}"
     - nombre: "{{ KUBELET_PKG }}"
