@@ -4,10 +4,10 @@
   vars:
     KUBERNETES_VERSION: "v1.37"
     CRIO_VERSION: "v1.37"
-    CRIO_O_PKG: "cri-o"
-    KUBELET_PKG: "kubelet"
-    KUBEADM_PKG: "kubeadm"
-    KUBECTL_PKG: "kubectl"
+    CRIO_O_PKG: cri-o
+    KUBELET_PKG: kubelet
+    KUBEADM_PKG: kubeadm
+    KUBECTL_PKG: kubectl
   
   tasks:
     - name: Instalar dependencias
