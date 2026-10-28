@@ -55,7 +55,6 @@
     name: "{{ paquete.nombre }}"
     state: present
   loop:
-    - nombre: curl
     - nombre: "{{ CRIO_O_PKG }}"
     - nombre: "{{ KUBEADM_PKG }}"
     - nombre: "{{ KUBELET_PKG }}"
