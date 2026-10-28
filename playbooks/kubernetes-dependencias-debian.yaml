@@ -60,8 +60,8 @@
     state: present
   loop:
     - nombre: "{{ CRIO_O_PKG }}"
-    - nombre: "{{ KUBEADM_PKG }}"
     - nombre: "{{ KUBELET_PKG }}"
+    - nombre: "{{ KUBEADM_PKG }}"
     - nombre: "{{ KUBECTL_PKG }}"
   loop_control:
     loop_var: paquete         
