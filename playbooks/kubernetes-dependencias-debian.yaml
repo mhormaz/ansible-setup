@@ -2,7 +2,7 @@
 - name: Actualización de índices de paquetes
   ansible.builtin.apt:
     update_cache: yes
-    cache_valid_time: 3600
+    cache_valid_time: 0
 
 - name: Instalación de dependencias de APT
   ansible.builtin.apt:
@@ -51,7 +51,7 @@
 - name: Actualización de índices de paquetes
   ansible.builtin.apt:
     update_cache: true
-    cache_valid_time: 3600
+    cache_valid_time: 0
 
 - name: Instalar paquetes necesarios
   become: true
