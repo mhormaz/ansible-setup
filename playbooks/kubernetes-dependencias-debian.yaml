@@ -17,7 +17,6 @@
     path: /etc/apt/keyrings
     state: directory
     mode: "0755" 
-  become: true
 
 
 # Instalación de repositorios #
@@ -32,7 +31,6 @@
       - "/"
     signed_by: "https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/Release.key"
     state: present
-  become: true
 
 - name: Añadir repositorio de CRI-O
   ansible.builtin.deb822_repository:
@@ -45,7 +43,6 @@
       - "/"
     signed_by: "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/Release.key"
     state: present
-  become: true
 
 # Actualizamos los índices antes de instalar #
 - name: Actualización de índices de paquetes
@@ -54,12 +51,23 @@
     cache_valid_time: 0
 
 - name: Instalar paquetes necesarios
-  become: true
   ansible.builtin.apt:
     name: "{{ paquete.nombre }}"
     state: present
   loop:
     - nombre: "{{ CRIO_O_PKG }}"
+    - nombre: "{{ KUBELET_PKG }}"
+    - nombre: "{{ KUBEADM_PKG }}"
+    - nombre: "{{ KUBECTL_PKG }}"
+  loop_control:
+    loop_var: paquete
+    label: "{{ paquete.nombre }}"
+
+- name: Congelación de la versión de los paquetes de kubernetes
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
     - nombre: "{{ KUBELET_PKG }}"
     - nombre: "{{ KUBEADM_PKG }}"
     - nombre: "{{ KUBECTL_PKG }}"
