@@ -12,12 +12,11 @@
       - gpg
     state: present
 
-- name: Creación de directorio para las claves de los repos
+- name: Creación del directorio para las claves de los repos
   ansible.builtin.file:
     path: /etc/apt/keyrings
     state: directory
     mode: "0755" 
-
 
 # Instalación de repositorios #
 - name: Añadir repositorio de Kubernetes
@@ -65,7 +64,7 @@
 
 - name: Congelación de la versión de los paquetes de kubernetes
   ansible.builtin.dpkg_selections:
-    name: "{{ item }}"
+    name: "{{ paquete.nombre }}"
     selection: hold
   loop:
     - nombre: "{{ KUBELET_PKG }}"

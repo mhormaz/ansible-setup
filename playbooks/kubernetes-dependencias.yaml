@@ -12,6 +12,12 @@
       - gpg
     state: present
 
+- name: Creación del directorio para las claves de los repos
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755" 
+
 # Claves de los repos de kubernetes y CRI-O #
 - name: Descarga de la clave de Kubernetes
   ansible.builtin.get_url:
@@ -67,9 +73,9 @@
     loop_var: paquete
     label: "{{ paquete.nombre }}"
 
-- name: Congelamos la versión de los paquetes de kubernetes
+- name: Congelación de la versión de los paquetes de kubernetes
   ansible.builtin.dpkg_selections:
-    name: "{{ item }}"
+    name: "{{ paquete }}"
     selection: hold
   loop:
     - nombre: "{{ KUBELET_PKG }}"
