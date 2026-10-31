@@ -1,6 +1,6 @@
 - name: Instalar dependencias
   ansible.builtin.import_tasks: ./dependencias/dependencias-debian.yaml
-  when: ansible_facts["ansible_distribution"] == "Debian"
+  when: ansible_os_family == "Debian"
 
 - name: Activar reenvio de IPv4 (parámetros para kubernetes)
   ansible.builtin.shell:
