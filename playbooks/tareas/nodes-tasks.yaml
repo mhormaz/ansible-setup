@@ -17,4 +17,4 @@
     enabled: yes    # Arrancar al inicio del sistema
 
 - name: Desactivamos SWAP
-  ansible.builtin.import_tasks: ./tareas/kubernetes-swapoff.yaml
+  ansible.builtin.import_tasks: ./tareas/swapoff.yaml
