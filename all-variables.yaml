@@ -1,0 +1,19 @@
+# Versiones globales de kubernetes y de CRI-O
+KUBERNETES_VERSION: "v1.37"
+CRIO_VERSION: "v1.37"
+CRIO_O_PKG: cri-o
+KUBELET_PKG: kubelet
+KUBEADM_PKG: kubeadm
+KUBECTL_PKG: kubectl
+
+# CRI por defecto, que es CRIO, el que instalamos en todos los nodos
+# Es necesario especificarlo por si hay varios en el mismo sistema
+CRI_SOCKET: "unix:///var/run/crio/crio.sock"
+
+# Rango de ips para los pods. No debe coincidir ninguna ip de ese rango
+# 192.168.1.XXX suele ser la ip que asigna el router automáticamente (de telefónica), 
+# así que usaremos este rango por defecto
+CLUSTER_CIDR: 193.168.0.0/16
+
+# Versión de CALICO, que es el CNI elegido
+CALICO_VERSION: v3.33.0
