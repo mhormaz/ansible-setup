@@ -32,7 +32,7 @@
 
     - name: Configurar kubectl para este host
       ansible.builtin.import_tasks: ./tareas/config-kubectl.yaml
-      when: k8s_apiserver_status.rc != 0
+#      when: k8s_apiserver_status.rc != 0
 
     - name: Comprobamos si está activo CALICO
       ansible.builtin.command:
