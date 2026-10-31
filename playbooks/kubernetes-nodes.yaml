@@ -1,5 +1,5 @@
 - name: Configuración de nodo de kubernetes (worker y control-plane)
-  hosts: workers
+  hosts: k8s_nodes
   become: true # Es para ejecutar con sudo
   vars:
     KUBERNETES_VERSION: "v1.37"

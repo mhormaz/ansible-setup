@@ -1,0 +1,13 @@
+all:
+  children:
+    k8s_nodes:
+      children:
+        workers:
+          hosts:
+            worker1:
+            worker2:
+            worker3:
+
+        control_planes:
+          hosts:
+            control-plane:

@@ -1,0 +1,13 @@
+- name: Configuración de nodo de kubernetes control-plane
+  hosts: control-planes
+  become: true # Ejecutar como sudo
+  vars:
+    KUBERNETES_VERSION: "a"
+  
+  tasks:
+    - name: Preparar nodo
+      ansible.builtin.import_tasks: ./kubernetes-nodes.yaml
+
+    - name: Prueba
+      ansible.builtin.shell:
+        cmd: echo "hola"
