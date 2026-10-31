@@ -1,3 +1,7 @@
 ansible_connection: ssh
 ansible_become: true
 ansible_become_method: sudo
+
+# CRI por defecto, que es CRIO, el que instalamos en todos los nodos
+# Es necesario especificarlo por si hay varios en el mismo sistema
+CRI_SOCKET: "unix:///var/run/crio/crio.sock"

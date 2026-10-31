@@ -1,13 +1,26 @@
 - name: Configuración de nodo de kubernetes control-plane
   hosts: control-planes
   become: true # Ejecutar como sudo
-  vars:
-    KUBERNETES_VERSION: "a"
   
   tasks:
-    - name: Preparar nodo
+    - name: Preparación de nodo
       ansible.builtin.import_tasks: ./kubernetes-nodes.yaml
 
-    - name: Prueba
-      ansible.builtin.shell:
-        cmd: echo "hola"
+    - name: Comprobar si kube-apiserver está ejecutándose
+      ansible.builtin.command:
+        argv:
+          - pgrep
+          - -f
+          - '[k]ube-apiserver'
+      register: k8s_apiserver_status
+      changed_when: false
+      failed_when: false
+
+    - name: Inicializar clúster de Kubernetes
+      ansible.builtin.command:
+        argv:
+          - kubeadm
+          - init
+          - --cri-socket={{ CRI_SOCKET }}
+          - --pod-network-cidr={{ CLUSTER_CIDR }}
+      when: k8s_apiserver_status.rc != 0

@@ -1,0 +1,12 @@
+- name: Desactivar todas las SWAP en caliente
+  ansible.builtin.command:
+    cmd: swapoff -a
+  become: true
+
+- name: Desactivar SWAP de forma permanente
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '^(\s*[^#].*\s+swap\s+.*)$'
+    replace: '# \1'
+    backup: true
+  become: true

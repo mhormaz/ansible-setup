@@ -1,1 +1,6 @@
 node_role: control-plane
+
+# Rango de ips para los pods. No debe coincidir ninguna ip de ese rango
+# 192.168.1.XXX suele ser la ip que asigna el router automáticamente (de telefónica), 
+# así que usaremos este rango por defecto
+CLUSTER_CIDR: 193.168.0.0/16

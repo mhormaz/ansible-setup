@@ -11,7 +11,8 @@
   
   tasks:
     - name: Instalar dependencias
-      ansible.builtin.import_tasks: ./kubernetes-dependencias-debian.yaml
+      ansible.builtin.import_tasks: ./dependencias-debian.yaml
+      when: ansible_distribution == 'Debian'
 
     - name: Activar reenvio de IPv4 (parámetros para kubernetes)
       ansible.builtin.shell:
@@ -25,4 +26,7 @@
       ansible.builtin.service:
         name: crio
         state: started  # Opciones: started, stopped, restarted
-        enabled: yes    # ¿Arrancar al inicio del sistema?
+        enabled: yes    # Arrancar al inicio del sistema
+
+    - name: Desactivamos SWAP
+      ansible.builtin.import_tasks: ./kubernetes-swapoff.yaml
