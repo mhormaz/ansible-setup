@@ -1,4 +1,3 @@
----
 - name: Actualización de índices de paquetes
   ansible.builtin.apt:
     update_cache: yes
@@ -18,30 +17,41 @@
     state: directory
     mode: "0755" 
 
+# Claves de los repos de kubernetes y CRI-O #
+- name: Descarga de la clave de Kubernetes
+  ansible.builtin.get_url:
+   url: "https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/Release.key"
+   dest: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+   owner: root
+   group: root
+   mode: "0644"
+
+- name: Descarga de la clave de CRI-O
+  ansible.builtin.get_url:
+    url: "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/Release.key"
+    dest: /etc/apt/keyrings/cri-o-apt-keyring.gpg
+    owner: root
+    group: root
+    mode: "0644"
+
 # Instalación de repositorios #
 - name: Añadir repositorio de Kubernetes
-  ansible.builtin.deb822_repository:
-    name: kubernetes
-    types:
-      - deb
-    uris:
-      - "https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/"
-    suites:
-      - "/"
-    signed_by: "https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/Release.key"
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg]
+      https://pkgs.k8s.io/core:/stable:/{{ KUBERNETES_VERSION }}/deb/ /
+    filename: kubernetes
     state: present
+    update_cache: false
 
 - name: Añadir repositorio de CRI-O
-  ansible.builtin.deb822_repository:
-    name: cri-o
-    types:
-      - deb
-    uris:
-      - "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/"
-    suites: 
-      - "/"
-    signed_by: "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/Release.key"
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg]
+      https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ CRIO_VERSION }}/deb/ /
+    filename: cri-o
     state: present
+    update_cache: false
 
 # Actualizamos los índices antes de instalar #
 - name: Actualización de índices de paquetes
@@ -64,7 +74,7 @@
 
 - name: Congelación de la versión de los paquetes de kubernetes
   ansible.builtin.dpkg_selections:
-    name: "{{ paquete.nombre }}"
+    name: "{{ paquete }}"
     selection: hold
   loop:
     - nombre: "{{ KUBELET_PKG }}"

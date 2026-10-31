@@ -1,4 +1,3 @@
-# CLUSTER_CIDR
 - name: Istalación de definiciones de CALICO (NRI)
   ansible.builtin.command:
     argv:

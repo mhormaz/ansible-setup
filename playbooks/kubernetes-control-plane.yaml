@@ -3,8 +3,8 @@
   become: true # Ejecutar como sudo
   
   tasks:
-    - name: Preparación de nodo
-      ansible.builtin.import_tasks: ./kubernetes-nodes.yaml
+    - name: Preparar nodo
+      ansible.builtin.import_tasks: ./tareas/nodes-tasks.yaml
       when: >
         'kubelet' not in ansible_facts.packages or
         'kubeadm' not in ansible_facts.packages or
@@ -44,5 +44,5 @@
       failed_when: false
 
     - name: Inicializar el CNI
-      ansible.builtin.import_tasks: ./calico-CNI.yaml
+      ansible.builtin.import_tasks: ./tareas/CNI/calico-CNI.yaml
       when: calico_status.rc != 0
