@@ -17,6 +17,10 @@
       changed_when: false
       failed_when: false
 
+    - name: Debug K8S_APISERVER_STATUS
+      ansible.builtin.debug:
+        var: k8s_apiserver_status
+
     - name: Inicializar clúster de Kubernetes
       ansible.builtin.command:
         argv:
@@ -38,6 +42,10 @@
       register: calico_status
       changed_when: false
       failed_when: false
+
+    - name: Debug CALICO_STATUS
+      ansible.builtin.debug:
+        var: calico_status
 
     - name: Inicializar el CNI
       ansible.builtin.import_tasks: ./tareas/CNI/calico-CNI.yaml
