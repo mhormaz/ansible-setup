@@ -4,6 +4,12 @@
   gather_facts: true
 
   tasks:
+
+    - name: Obtener información del usuario
+      ansible.builtin.setup:
+        filter:
+          - ansible_env
+          
     - name: Preparar nodo
       ansible.builtin.import_tasks: ./tareas/nodes-tasks.yaml
 
