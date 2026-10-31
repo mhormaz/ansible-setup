@@ -2,6 +2,14 @@ ansible_connection: ssh
 ansible_become: true
 ansible_become_method: sudo
 
+# Versiones globales de kubernetes y de CRI-O
+KUBERNETES_VERSION: "v1.37"
+CRIO_VERSION: "v1.37"
+CRIO_O_PKG: cri-o
+KUBELET_PKG: kubelet
+KUBEADM_PKG: kubeadm
+KUBECTL_PKG: kubectl
+
 # CRI por defecto, que es CRIO, el que instalamos en todos los nodos
 # Es necesario especificarlo por si hay varios en el mismo sistema
 CRI_SOCKET: "unix:///var/run/crio/crio.sock"

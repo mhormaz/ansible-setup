@@ -1,0 +1,56 @@
+# CLUSTER_CIDR
+- name: Istalación de definiciones de CALICO (NRI)
+  ansible.builtin.command:
+    argv:
+      - kubectl 
+      - create 
+      - -f 
+      - "https://raw.githubusercontent.com/projectcalico/calico/{{ CALICO_VERSION }}/manifests/v3_projectcalico_org.yaml"
+
+- name: Instalación de definiciones de CALICO (NRI)
+  ansible.builtin.command:
+    argv:
+      - kubectl 
+      - create 
+      - -f 
+      - "https://raw.githubusercontent.com/projectcalico/calico/{{ CALICO_VERSION }}/manifests/tigera-operator.yaml"
+
+- name: Descarga de documento de configuración
+  ansible.builtin.command:
+    argv:
+      - curl 
+      - -O 
+      - "https://raw.githubusercontent.com/projectcalico/calico/{{ CALICO_VERSION }}/manifests/custom-resources.yaml"
+
+# Sustituimos el valor por defecto de CIDR de CALICO ya que choca con el rango habitual de IP 
+# que otorga automáticamente TELEFONICA
+- name: Configuración de CALICO
+  ansible.builtin.command:
+    argv:
+      - sed 
+      - -i 
+      - "s|cidr: 192.168.0.0/16|cidr: {{ CLUSTER_CIDR }}|g" 
+      - ./custom-resources.yaml
+
+- name: Desplegamos el cliente tigera
+  ansible.builtin.command:
+    argv:
+      - kubectl 
+      - apply 
+      - -f 
+      - ./custom-resources.yaml
+
+- name: Comprobamos que se configure Calico
+  ansible.builtin.command:
+    argv:
+      - kubectl 
+      - wait 
+      - tigerastatus
+      - --all 
+      - --for=jsonpath='{.status.conditions[?(@.type=="Available")].status}'=True 
+      - --timeout=300s
+
+- name: Eliminación de archivo de tigera
+  ansible.builtin.file:
+    path: ./custom-resources.yaml
+    state: absent

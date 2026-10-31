@@ -1,10 +1,15 @@
 - name: Configuración de nodo de kubernetes control-plane
-  hosts: control-planes
+  hosts: control_planes
   become: true # Ejecutar como sudo
   
   tasks:
     - name: Preparación de nodo
       ansible.builtin.import_tasks: ./kubernetes-nodes.yaml
+      when: >
+        'kubelet' not in ansible_facts.packages or
+        'kubeadm' not in ansible_facts.packages or
+        'kubectl' not in ansible_facts.packages or
+        'cri-o' not in ansible_facts.packages
 
     - name: Comprobar si kube-apiserver está ejecutándose
       ansible.builtin.command:
@@ -24,3 +29,20 @@
           - --cri-socket={{ CRI_SOCKET }}
           - --pod-network-cidr={{ CLUSTER_CIDR }}
       when: k8s_apiserver_status.rc != 0
+
+    - name: Comprobamos si está activo CALICO
+      ansible.builtin.command:
+        argv:
+          - kubectl 
+          - wait
+          - tigerastatus
+          - --all 
+          - --for=jsonpath='{.status.conditions[?(@.type=="Available")].status}'=True 
+          - --timeout=2s
+      register: calico_status
+      changed_when: false
+      failed_when: false
+
+    - name: Inicializar el CNI
+      ansible.builtin.import_tasks: ./calico-CNI.yaml
+      when: calico_status.rc != 0
