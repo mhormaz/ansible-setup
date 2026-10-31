@@ -1,3 +1,4 @@
+# Tiene la misma jerarquía que el inventory.yaml
 all:
   children:
     k8sNodes:

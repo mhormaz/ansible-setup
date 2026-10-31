@@ -5,11 +5,6 @@
   tasks:
     - name: Preparar nodo
       ansible.builtin.import_tasks: ./tareas/nodes-tasks.yaml
-      when: >
-        'kubelet' not in ansible_facts.packages or
-        'kubeadm' not in ansible_facts.packages or
-        'kubectl' not in ansible_facts.packages or
-        'cri-o' not in ansible_facts.packages
 
     - name: Comprobar si kube-apiserver está ejecutándose
       ansible.builtin.command:
