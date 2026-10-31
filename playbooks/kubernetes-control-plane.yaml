@@ -12,6 +12,7 @@
           - "Directorio del usuario: {{ ansible_user_dir }}"
 
     - name: Preparar nodo
+      become: true
       ansible.builtin.import_tasks: ./tareas/nodes-tasks.yaml
 
     - name: Comprobar si kube-apiserver está ejecutándose

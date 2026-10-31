@@ -5,4 +5,5 @@
   
   tasks:
     - name: Preparar nodo
+      become: true
       ansible.builtin.import_tasks: ./tareas/nodes-tasks.yaml
