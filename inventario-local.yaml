@@ -7,7 +7,7 @@ all:
             localhost:
               ansible_connection: local
                 
-        control-planes:
+        control_planes:
           hosts:
             localhost:
               ansible_connection: local

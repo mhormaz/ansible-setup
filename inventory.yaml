@@ -19,7 +19,7 @@ all:
               ansible_user: worker3
               ansible_ssh_pass: worker
               ansible_become_password: worker
-        control-planes:
+        control_planes:
           hosts:
             control-plane:
               ansible_host: 192.168.1.55
