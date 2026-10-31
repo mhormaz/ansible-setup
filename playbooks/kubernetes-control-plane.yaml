@@ -5,11 +5,13 @@
 
   tasks:
 
-    - name: Obtener información del usuario
-      ansible.builtin.setup:
-        filter:
-          - ansible_env
-          
+    - name: Comprobar usuario y directorio HOME
+      ansible.builtin.debug:
+        msg:
+          - "Usuario: {{ ansible_user_id }}"
+          - "HOME: {{ ansible_env.HOME }}"
+          - "Directorio del usuario: {{ ansible_user_dir }}"
+
     - name: Preparar nodo
       ansible.builtin.import_tasks: ./tareas/nodes-tasks.yaml
 
