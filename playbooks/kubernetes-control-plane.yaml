@@ -1,6 +1,5 @@
 - name: Configuración de nodo de kubernetes control-plane
   hosts: control_planes
-  become: true # Ejecutar como sudo
   gather_facts: true
 
   tasks:
@@ -40,7 +39,6 @@
 
     - name: Configurar kubectl para este host
       ansible.builtin.import_tasks: ./tareas/config-kubectl.yaml
-#      when: k8s_apiserver_status.rc != 0
 
     - name: Comprobamos si está activo CALICO
       ansible.builtin.command:
