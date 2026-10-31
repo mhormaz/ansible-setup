@@ -1,0 +1,13 @@
+all:
+  children:
+    k8sNodes:
+      children:
+        workers:
+          hosts:
+            localhost:
+              ansible_connection: local
+                
+        control-planes:
+          hosts:
+            localhost:
+              ansible_connection: local
