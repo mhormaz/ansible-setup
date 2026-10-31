@@ -1,6 +1,7 @@
 - name: Configuración de nodo de kubernetes (worker y control-plane)
   hosts: all
   become: true # Es para ejecutar con sudo
+  gather_facts: true
   
   tasks:
     - name: Preparar nodo
