@@ -1,4 +1,4 @@
 ansible_host: 192.168.1.55
 ansible_user: k8s
 ansible_ssh_pass: k8s #"{{ vault_control_plane_ssh_pass }}"
-ansible_become_password: k8s #"{{ vault_control_plane_become_password }}"
+ansible_become_password: kubernetes #"{{ vault_control_plane_become_password }}"
