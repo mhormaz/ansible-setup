@@ -15,8 +15,8 @@
     name: crio
     state: started  # Opciones: started, stopped, restarted
     enabled: yes    # Arrancar al inicio del sistema
-  register: myserviceDetails
-  until: myserviceDetails.status.ActiveState == "active"
+  register: crio_service_status
+  until: crio_service_status.status.ActiveState == "active"
   retries: 15
   delay: 10
 

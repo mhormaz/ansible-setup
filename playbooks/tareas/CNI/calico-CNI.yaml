@@ -51,6 +51,14 @@
       - --all 
       - --for=jsonpath='{.status.conditions[?(@.type=="Available")].status}'=True 
       - --timeout=300s
+  register: tigera_status
+  retries: 15
+  delay: 10
+  failed_when: false
+
+- name: Comprobar usuario y directorio HOME
+  ansible.builtin.debug:
+    var: tigera_status
 
 - name: Eliminación de archivo de tigera
   ansible.builtin.file:
