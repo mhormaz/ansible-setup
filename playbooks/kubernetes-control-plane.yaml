@@ -49,7 +49,7 @@
           - wait
           - tigerastatus
           - --all
-          - --for=jsonpath='{.status.conditions[?(@.type==\"Available\")].status}'=True
+          - "--for=jsonpath={.status.conditions[?(@.type==\"Available\")].status}=True"
       register: calico_status
       changed_when: false
       failed_when: false

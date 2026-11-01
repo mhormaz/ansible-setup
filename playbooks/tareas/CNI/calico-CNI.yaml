@@ -49,12 +49,11 @@
       - wait
       - tigerastatus
       - --all
-      - --for=jsonpath='{.status.conditions[?(@.type==\"Available\")].status}'=True
+      - "--for=jsonpath={.status.conditions[?(@.type==\"Available\")].status}=True"
       - --timeout=300s
   register: tigera_status
   retries: 15
   delay: 10
-  failed_when: false
 
 - name: Comprobar usuario y directorio HOME
   ansible.builtin.debug:
