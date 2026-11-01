@@ -30,6 +30,7 @@
         var: k8s_apiserver_status
 
     - name: Inicializar clúster de Kubernetes
+      become: true
       ansible.builtin.command:
         argv:
           - kubeadm
