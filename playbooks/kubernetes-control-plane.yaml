@@ -45,12 +45,11 @@
     - name: Comprobamos si está activo CALICO
       ansible.builtin.command:
         argv:
-          - kubectl 
+          - kubectl
           - wait
           - tigerastatus
-          - --all 
-          - --for=jsonpath='{.status.conditions[?(@.type=="Available")].status}'=True 
-          - --timeout=2s
+          - --all
+          - --for=jsonpath='{.status.conditions[?(@.type==\"Available\")].status}'=True
       register: calico_status
       changed_when: false
       failed_when: false

@@ -42,14 +42,14 @@
       - -f 
       - ./custom-resources.yaml
 
-- name: Comprobamos que se configure Calico
+- name: Esperamos a que se configure Calico
   ansible.builtin.command:
     argv:
-      - kubectl 
-      - wait 
+      - kubectl
+      - wait
       - tigerastatus
-      - --all 
-      - --for=jsonpath='{.status.conditions[?(@.type=="Available")].status}'=True 
+      - --all
+      - --for=jsonpath='{.status.conditions[?(@.type==\"Available\")].status}'=True
       - --timeout=300s
   register: tigera_status
   retries: 15
