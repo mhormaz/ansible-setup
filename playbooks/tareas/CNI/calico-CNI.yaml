@@ -2,18 +2,20 @@
   ansible.builtin.command:
     argv:
       - kubectl 
-      - apply 
+      - create 
       - -f 
       - "https://raw.githubusercontent.com/projectcalico/calico/{{ CALICO_VERSION }}/manifests/v3_projectcalico_org.yaml"
+  failed_when: false
 
 - name: Instalación de definiciones de CALICO (NRI)
   ansible.builtin.command:
     argv:
       - kubectl 
-      - apply 
+      - create 
       - -f 
       - "https://raw.githubusercontent.com/projectcalico/calico/{{ CALICO_VERSION }}/manifests/tigera-operator.yaml"
-
+  failed_when: false
+  
 - name: Descarga de documento de configuración
   ansible.builtin.command:
     argv:
