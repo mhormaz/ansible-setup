@@ -2,7 +2,7 @@
   ansible.builtin.command:
     argv:
       - kubectl 
-      - create 
+      - apply 
       - -f 
       - "https://raw.githubusercontent.com/projectcalico/calico/{{ CALICO_VERSION }}/manifests/v3_projectcalico_org.yaml"
 
@@ -10,7 +10,7 @@
   ansible.builtin.command:
     argv:
       - kubectl 
-      - create 
+      - apply 
       - -f 
       - "https://raw.githubusercontent.com/projectcalico/calico/{{ CALICO_VERSION }}/manifests/tigera-operator.yaml"
 
