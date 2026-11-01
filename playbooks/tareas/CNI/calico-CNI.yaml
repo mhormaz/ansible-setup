@@ -55,10 +55,6 @@
   retries: 15
   delay: 10
 
-- name: Comprobar usuario y directorio HOME
-  ansible.builtin.debug:
-    var: tigera_status
-
 - name: Eliminación de archivo de tigera
   ansible.builtin.file:
     path: ./custom-resources.yaml
