@@ -1,7 +1,18 @@
+- name: Comprobar SWAP activa
+  ansible.builtin.command:
+    argv:
+      - swapon
+      - --noheadings
+  register: swap_status
+  changed_when: false
+
+# Usamos este comando solo si no está desactivada, para una mejor salida por consola
 - name: Desactivar todas las SWAP en caliente
   ansible.builtin.command:
-    cmd: swapoff -a
-  become: true
+    argv: 
+      - swapoff 
+      - -a
+  when: swap_status.stdout | trim | length > 0
 
 - name: Desactivar SWAP de forma permanente
   ansible.builtin.replace:
@@ -9,4 +20,3 @@
     regexp: '^(\s*[^#].*\s+swap\s+.*)$'
     replace: '# \1'
     backup: true
-  become: true
