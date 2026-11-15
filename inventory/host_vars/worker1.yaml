@@ -1,4 +1,4 @@
-ansible_host: 192.168.1.54
+ansible_host: 192.168.1.46
 ansible_user: worker1
 ansible_ssh_pass: worker #"{{ vault_worker1_ssh_pass }}"
 ansible_become_password: worker #"{{ vault_worker1_become_password }}"
