@@ -1,6 +1,6 @@
 all:
   children:
-    k8s_nodes:
+    k8sNodes:
       children:
         workers:
           hosts:
