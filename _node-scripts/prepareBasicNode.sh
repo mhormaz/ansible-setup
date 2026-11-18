@@ -15,7 +15,7 @@ packages_debian() {
     echo "================================================="
     echo "ACTUALIZAMOS INDICES Y DESCARGAMOS SSH Y PYTHON3"
     echo "================================================="
-    apt-get update && apt-get -y install ssh python3
+    apt-get update && apt-get -y install ssh python3 python3-debian python3-venv 
 }
 
 func_install() {
