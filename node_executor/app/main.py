@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from node_executor.app.ansible_runner import run_playbook
 
 app = FastAPI(
