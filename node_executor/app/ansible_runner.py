@@ -1,16 +1,34 @@
 import subprocess
 from pathlib import Path
 
+################
+## CONSTANTES ##
+################
 
-# Directorio raíz del repositorio Ansible
-ANSIBLE_PROJECT_DIR = Path("/home/control-plane1/ansible-setup")
+# Directorio raíz del repo ansible-setup
+ANSIBLE_PROJECT_DIR = Path(__file__).resolve().parents[2]
+
+# Playbooks permitidos
+ALLOWED_OPERATIONS = {
+    "configure_nodes": "playbooks/kubernetes-nodes.yaml",
+    "configure_control_plane": "playbooks/kubernetes-control-plane.yaml",
+}
 
 
-def run_playbook(playbook: str) -> dict:
+###############
+## FUNCIONES ##
+###############
+
+def run_playbook(operation: str) -> dict:
     """
-    Ejecuta un playbook de Ansible desde el directorio del proyecto.
+    Ejecuta un playbook de Ansible en función de la operación seleccionada
     """
 
+    playbook = ALLOWED_OPERATIONS.get(operation)
+    # Si no existe la operación, termina el proceso
+    if playbook is None:
+        return {"success": False, "error": f"Operación no permitida: {operation}"}
+    
     command = ["ansible-playbook", playbook, "--check", "--diff"]
 
     try:
@@ -25,6 +43,8 @@ def run_playbook(playbook: str) -> dict:
         return {
             "success": result.returncode == 0,
             "return_code": result.returncode,
+            "operation": operation,
+            "playbook": playbook,
             "stdout": result.stdout,
             "stderr": result.stderr
         }

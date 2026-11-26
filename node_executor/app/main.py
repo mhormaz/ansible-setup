@@ -17,11 +17,11 @@ async def root():
 async def health():
     return {"status": "healthy"}
 
-@app.post("/test-ansible")
-async def test_ansible():
-    result = run_playbook("playbooks/kubernetes-nodes.yaml")
+@app.post("/operations/{operation}")
+async def execute_operation(operation: str):
+    result = run_playbook(operation)
 
     if not result["success"]:
-        raise HTTPException(status_code=500 ,detail=result)
+        raise HTTPException(status_code=500, detail=result)
 
     return result
