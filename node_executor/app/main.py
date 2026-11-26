@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.ansible_runner import run_playbook
+from node_executor.app.ansible_runner import run_playbook
 
 app = FastAPI(
     title="Node Executor",
