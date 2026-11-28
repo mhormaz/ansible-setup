@@ -11,10 +11,15 @@ ANSIBLE_PROJECT_DIR = Path(__file__).resolve().parents[2]
 
 # Playbooks permitidos
 ALLOWED_OPERATIONS = {
-    # Este playbook, sirve para preparar un nodo, que es lo todo lo que necesita un worker, pero puede usarse en un control plane, 
-    # y luego usar el playbook dedicado, que sería lo mismo que usarlo directamente ya que ambos comparten la misma tarea inicial.
-    "configure_worker": "playbooks/kubernetes-nodes.yaml",
-    "configure_control_plane": "playbooks/kubernetes-control-plane.yaml",
+    # Los playbooks solo se ejecutan si la máquina pertenece a ese grupo
+    "configure_worker": {
+        "playbook": "playbooks/kubernetes-worker.yaml",
+        "group": "workers"
+    },
+    "configure_control_plane": {
+        "playbook": "playbooks/kubernetes-control-plane.yaml",
+        "group": "control_planes"
+    }
 }
 
 INVENTORY_FILE = ANSIBLE_PROJECT_DIR / "inventory/hosts.yaml"
@@ -23,10 +28,33 @@ INVENTORY_FILE = ANSIBLE_PROJECT_DIR / "inventory/hosts.yaml"
 ## FUNCIONES ##
 ###############
 
+def get_inventory_group_hosts(group_name: str) -> list[str]:
+    """
+     Se encarga de devolver un listado con todas las máquinas de un grupo seleccionado.
+    """
+
+    result = subprocess.run(
+        [
+            "ansible-inventory",
+            "-i", str(INVENTORY_FILE),
+            "--list"
+        ],
+        cwd=ANSIBLE_PROJECT_DIR,
+        capture_output=True,
+        text=True,
+        check=True
+    )
+
+    # Devolvemos los hots del grupo seleccionado
+    inventory = json.loads(result.stdout)
+    group = inventory.get(group_name, {})
+    return group.get("hosts", [])
+
+
 
 def get_inventory_hosts() -> list[str]:
     """
-    Obtiene los nombres de los hosts definidos en el inventario.
+    Se encarga de devolver un listado con todas las máquinas del inventario.
     """
 
     # Recuperamos el inventario actual
@@ -50,29 +78,32 @@ def get_inventory_hosts() -> list[str]:
 
     return sorted(hosts)
 
+
+
 def run_playbook(operation: str, limit:str | None = None) -> dict:
     """
     Ejecuta un playbook de Ansible en función de la operación seleccionada.
-    Se permite la ejecución de la operación en máquinas concretas (limit)
+    Se permite la ejecución de la operación en máquinas concretas (limit).
     """
 
-    # Resolvemos la operación y creamos el comando a ejecutar
-    playbook = ALLOWED_OPERATIONS.get(operation)
-    if playbook is None:
+    # Resolvemos la operación y su grupo permitido
+    operation_pair = ALLOWED_OPERATIONS.get(operation)
+    if operation_pair is None:
         return {"success": False, "error": f"Operación no permitida: {operation}"}
-    command = ["ansible-playbook", playbook, "--check", "--diff"]
+    playbook = operation_pair["playbook"]
+    allowed_group = operation_pair["group"]
 
-    # Si se ha seleccionado una serie de máquinas a las que aplicar el comando, se extiende con "--limit".
+    #Buscamos los hosts del grupo permitido
+    try:
+        available_hosts = get_inventory_group_hosts(allowed_group)
+    except (subprocess.CalledProcessError, json.JSONDecodeError) as error:
+        return {
+            "success": False,
+            "error": f"No se pudo consultar el inventario: {error}"
+        }
+
+    # Si se ha seleccionado una serie de máquinas a las que aplicar el comando, se comprueba si pertenecen al grupo permitido
     if limit:
-        #Buscamos todos los host
-        try:
-            available_hosts = get_inventory_hosts()
-        except (subprocess.CalledProcessError, json.JSONDecodeError) as error:
-            return {
-                "success": False,
-                "error": f"No se pudo consultar el inventario: {error}"
-            }
-
         # Creamos el array de hosts (o host) afectados por "limit"
         requested_hosts = [host.strip() for host in limit.split(",")]
         if not requested_hosts or any(not host for host in requested_hosts):
@@ -81,17 +112,23 @@ def run_playbook(operation: str, limit:str | None = None) -> dict:
                 "error": "La selección de nodos no es válida"
             }
 
-        # Comprobamos que los host seleccionados sean válidos (estén en el inventario)
+        # Comprobamos que los host seleccionados sean válidos (pertenecen al grupo de la operación realizada)
         invalid_hosts = [host for host in requested_hosts if host not in available_hosts]
         if invalid_hosts:
             return {
                 "success": False,
-                "error": f"Nodos no encontrados en el inventario: {invalid_hosts}"
+                "error": (f"Los siguientes nodos no pertenecen al grupo " 
+                          f"'{allowed_group}': {invalid_hosts}")
             }
+        
+        # Creamos el listado de hosts (o host)
+        selected_hosts = ",".join(requested_hosts)
+    else:
+        # Si no hay limit, se seleccionan todos los nodos de ese grupo
+        selected_hosts = allowed_group
 
-        # Añadimos al comando los hosts a los que se va a aplicar
-        command.extend(["--limit", ",".join(requested_hosts)])    
 
+    command = ["ansible-playbook", playbook, "--limit", selected_hosts, "--check", "--diff"]
     try:
         result = subprocess.run(
             command,
@@ -106,6 +143,8 @@ def run_playbook(operation: str, limit:str | None = None) -> dict:
             "return_code": result.returncode,
             "operation": operation,
             "playbook": playbook,
+            "group": allowed_group,
+            "limit": selected_hosts,
             "stdout": result.stdout,
             "stderr": result.stderr
         }
