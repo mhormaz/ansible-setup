@@ -1,4 +1,4 @@
-# Tiene la misma jerarquía que el inventory.yaml
+# Tiene la misma jerarquía que el inventory.yaml, sirve para la ejecución local de Ansible (provisionarse uno mismo)
 all:
   children:
     k8sNodes:

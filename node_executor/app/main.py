@@ -18,8 +18,8 @@ async def health():
     return {"status": "healthy"}
 
 @app.post("/operations/{operation}")
-async def execute_operation(operation: str):
-    result = run_playbook(operation)
+async def execute_operation(operation: str, limit: str | None = None):
+    result = run_playbook(operation, limit)
 
     if not result["success"]:
         raise HTTPException(status_code=500, detail=result)
