@@ -80,6 +80,28 @@ def get_inventory_hosts() -> list[str]:
 
 
 
+def get_inventory_nodes() -> dict:
+    """
+    Se encarga de devolver un listado con todas las máquinas del inventario agrupadas por worker y control-plane.
+    """
+
+    result = subprocess.run(
+        ["ansible-inventory", "-i", str(INVENTORY_FILE), "--list"],
+        cwd=ANSIBLE_PROJECT_DIR,
+        capture_output=True,
+        text=True,
+        check=True
+    )
+
+    inventory = json.loads(result.stdout)
+    # Devolvemos un diccionario con los grupos, workers y control_planes
+    return {
+        "workers": inventory.get("workers", {}).get("hosts", []),
+        "control_planes": inventory.get("control_planes", {}).get("hosts", [])
+    }
+
+
+
 def run_playbook(operation: str, limit:str | None = None) -> dict:
     """
     Ejecuta un playbook de Ansible en función de la operación seleccionada.
