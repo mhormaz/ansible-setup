@@ -13,7 +13,7 @@ ANSIBLE_PROJECT_DIR = Path(__file__).resolve().parents[2]
 ALLOWED_OPERATIONS = {
     # Los playbooks solo se ejecutan si la máquina pertenece a ese grupo
     "configure_worker": {
-        "playbook": "playbooks/kubernetes-worker.yaml",
+        "playbook": "playbooks/kubernetes-nodes.yaml",
         "group": "workers"
     },
     "configure_control_plane": {

@@ -21,6 +21,7 @@ async def health():
 async def get_nodes():
     return get_inventory_hosts()
 
+# Las operaciones son: configure_worker, configure_control_plane
 @app.post("/operations/{operation}")
 async def execute_operation(operation: str, limit: str | None = None):
     result = run_playbook(operation, limit)
